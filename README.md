@@ -1,253 +1,148 @@
-# 🧠 Personal Memory Assistant
+# Personal Memory Assistant
 
-An AI-powered system that helps users **recall, search, and organize their digital memories** across files, photos, and notes using semantic understanding.
+An AI-powered system that helps users recall files, notes, and documents using semantic search instead of traditional filename-based search.
 
----
-
-# 🎯 Project Goal
-
-The goal of this project is to build an **AI memory layer for personal storage** that helps users:
-
-* Recall forgotten files and information
-* Search files based on meaning instead of filenames
-* View memories in a chronological timeline
-* Interact with their data through a conversational interface
-
-This project focuses on **transforming traditional storage into an intelligent memory system**.
+The assistant indexes personal files, converts them into embeddings, and allows natural language queries to retrieve relevant information.
 
 ---
 
-# 🚀 Core Vision
+## Features (Current Version)
 
-Most storage systems only store files.
-
-Our system will **understand and recall information like human memory**.
-
-Instead of:
-
-> “Where did I save that file?”
-
-Users can ask:
-
-> “Show the notes I wrote about operating systems last semester.”
-
-The assistant will retrieve relevant files even if the filenames do not match.
+* Upload files (PDF, TXT, images)
+* Extract text from files
+* Generate embeddings
+* Store embeddings in a vector database
+* Semantic search for file retrieval
+* Simple chat-style interface
 
 ---
 
-# 🧩 Key Features (Project Scope)
-
-### 1️⃣ File Ingestion
-
-The system will ingest files such as:
-
-* PDFs
-* Text documents
-* Images (optional OCR)
-
-Extract content and metadata from these files.
-
----
-
-### 2️⃣ Semantic Search
-
-Files will be searchable by **meaning** rather than filename.
-
-Example:
-Query:
-
-```
-database normalization notes
-```
-
-Result:
-Relevant notes or documents discussing database normalization.
-
----
-
-### 3️⃣ Conversational Retrieval
-
-Users interact through a **chat interface**.
-
-Example conversation:
-
-```
-User: Show my DBMS notes
-User: From last semester
-User: The PDF one
-```
-
-The assistant will maintain context across queries.
-
----
-
-### 4️⃣ Vector Database Memory Index
-
-All file content will be converted into **vector embeddings** and stored in a vector database.
-
-This enables fast semantic retrieval.
-
-Example tools:
-
-* ChromaDB
-* FAISS
-* Pinecone (optional)
-
----
-
-### 5️⃣ Memory Timeline
-
-The system will organize files and events into a **timeline view** so users can explore memories chronologically.
-
-Example:
-
-```
-2024 Semester
- ├ OS Notes
- ├ DBMS Assignment
- └ Project Report
-```
-
----
-
-# 🏗 Architecture Overview
-
-User Files
-↓
-Content Extraction
-↓
-Embedding Generation
-↓
-Vector Database
-↓
-Retrieval Engine
-↓
-Chat Interface
-
----
-
-# 🛠 Tech Stack
-
-Frontend
-
-* Streamlit
-
-Backend
-
-* FastAPI
-
-AI
-
-* Sentence Transformers / OpenAI Embeddings
-
-Vector Database
-
-* ChromaDB
-
-File Processing
-
-* PyPDF
-* Python-docx
-* Pillow
-
----
-
-# 📂 Project Structure
+## Project Structure
 
 ```
 personal-memory-assistant/
 │
-├ frontend/           # Streamlit UI
-├ backend/            # FastAPI server
-├ ingestion/          # File ingestion and parsing
-├ retrieval/          # Semantic search logic
-├ timeline/           # Timeline feature
-├ data/               # Demo dataset
-├ scripts/            # Indexing scripts
-├ models/             # Embedding configs
-├ README.md
-└ requirements.txt
+├── frontend/          # Streamlit UI
+├── backend/           # FastAPI backend
+├── ingestion/         # File processing pipeline
+├── retrieval/         # Semantic search logic
+├── scripts/           # Indexing scripts
+├── data/              # Demo dataset
+├── requirements.txt
+└── README.md
 ```
 
 ---
 
-# 👥 Team Workflow
+## Installation
 
-Each team member will work on **specific modules** to avoid overlap.
+Clone the repository:
 
-Suggested task split:
+```bash
+git clone https://github.com/yourusername/personal-memory-assistant.git
+cd personal-memory-assistant
+```
 
-| Module             | Responsibility                       |
-| ------------------ | ------------------------------------ |
-| Ingestion Pipeline | File parsing and metadata extraction |
-| Embedding Pipeline | Generate embeddings and indexing     |
-| Retrieval System   | Semantic search implementation       |
-| Backend API        | FastAPI endpoints                    |
-| Frontend           | Streamlit UI                         |
-| Timeline System    | Memory timeline visualization        |
+Create a virtual environment:
 
-All features should follow the **core project goal: intelligent memory recall**.
+```bash
+python -m venv venv
+```
 
----
+Activate the virtual environment:
 
-# 🔬 MVP Milestone
+Mac / Linux
 
-The first working version should support:
+```bash
+source venv/bin/activate
+```
 
-* Upload files
-* Extract text
-* Generate embeddings
-* Store vectors
-* Query system using natural language
-* Retrieve relevant files
+Windows
 
-Timeline view can be added after the retrieval system works.
+```bash
+venv\Scripts\activate
+```
 
----
+Install dependencies:
 
-# 📊 Evaluation Metrics
-
-The system will be evaluated using:
-
-* Retrieval accuracy (Top-K results)
-* Query response time
-* Relevance of retrieved files
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
-# 🧪 Demo Dataset
+## Running the Application
 
-The repository includes a demo dataset containing:
+Start the backend server:
 
-* Study notes
-* Sample PDFs
-* Images
-* Documents
+```bash
+cd backend
+uvicorn main:app --reload
+```
 
-This allows quick testing without uploading personal data.
+Start the frontend:
+
+```bash
+cd frontend
+streamlit run app.py
+```
+
+The application will open in your browser at:
+
+```
+http://localhost:8501
+```
 
 ---
 
-# 📌 Future Improvements
+## Indexing Files
 
-Possible future extensions include:
+Before searching, files must be indexed.
 
-* Cross-modal memory linking (images + documents)
+Run the indexing script:
+
+```bash
+python scripts/index_files.py
+```
+
+This will:
+
+1. Read files from the `data/` folder
+2. Extract text
+3. Generate embeddings
+4. Store them in the vector database
+
+---
+
+## Example Query
+
+```
+Show me my operating systems notes
+```
+
+The system will return the most relevant files based on semantic similarity.
+
+---
+
+## Tech Stack
+
+* Python
+* Streamlit
+* FastAPI
+* ChromaDB
+* Sentence Transformers
+
+---
+
+## Future Improvements
+
+* Conversational memory retrieval
+* Timeline view of files
 * Proactive memory suggestions
-* Offline local AI model
-* Personal knowledge graph
+* Cross-file memory linking
 
 ---
 
-# 📜 License
+## License
 
 MIT License
-
----
-
-# 💡 Contribution Guidelines
-
-* Keep commits small and descriptive.
-* Follow the project structure.
-* Write clear documentation for new modules.
-* Ensure new features align with the **core vision of memory recall**.
