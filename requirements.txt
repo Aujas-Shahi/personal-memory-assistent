@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+chromadb
+sentence-transformers
+pypdf
+python-docx
+streamlit
+requests
+numpy

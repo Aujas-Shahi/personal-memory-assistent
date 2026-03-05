@@ -1,0 +1,72 @@
+# Python bytecode
+
+**pycache**/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+
+venv/
+env/
+.venv/
+
+# Python environment files
+
+.python-version
+
+# IDE / Editor
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+
+.DS_Store
+Thumbs.db
+
+# Logs
+
+*.log
+
+# Environment variables
+
+.env
+
+# ChromaDB vector storage
+
+data/chroma_db/
+
+# Large model cache (HuggingFace)
+
+.cache/
+.huggingface/
+
+# Streamlit cache
+
+.streamlit/
+
+# Temporary files
+
+tmp/
+temp/
+
+# Jupyter checkpoints
+
+.ipynb_checkpoints/
+
+# Python build files
+
+build/
+dist/
+*.egg-info/
+
+# Test / debug files
+
+coverage/
+htmlcov/
+
+# Local data (optional if you don't want demo data uploaded)
+
+# data/sample_files/
