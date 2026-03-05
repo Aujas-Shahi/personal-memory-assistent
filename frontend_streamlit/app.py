@@ -1,8 +1,8 @@
 import streamlit as st
 import requests
 
-from frontend_streamlit.chat_ui import render_chat_ui
-from frontend_streamlit.timeline_ui import render_timeline_ui
+from chat_ui import render_chat_ui
+from timeline_ui import render_timeline_ui
 
 
 API_BASE = "http://127.0.0.1:8000"

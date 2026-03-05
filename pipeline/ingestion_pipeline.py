@@ -1,3 +1,4 @@
+import os
 from ingestion.file_loader import load_file
 from ingestion.text_extractor import extract_text
 from ingestion.chunking import chunk_text
@@ -35,8 +36,11 @@ def process_file(file_path: str):
     # Step 4: Generate embeddings
     embeddings = embed_chunks(chunks)
 
-    # Step 5: Store vectors in DB
-    store_vectors(chunks, embeddings)
+    # Get filename from path
+    filename = os.path.basename(file_path)
+
+    # Step 5: Store vectors
+    store_vectors(chunks, embeddings, filename)
 
     return {
         "status": "success",

@@ -9,14 +9,15 @@ client = chromadb.Client(Settings(
 collection = client.get_or_create_collection(name="memory_chunks")
 
 
-def store_vectors(chunks, embeddings):
+def store_vectors(chunks, embeddings, filename):
 
     ids = [str(uuid.uuid4()) for _ in chunks]
 
     collection.add(
         ids=ids,
         documents=chunks,
-        embeddings=embeddings.tolist()
+        embeddings=embeddings.tolist(),
+        metadatas=[{"source": filename} for _ in chunks]
     )
 
 
