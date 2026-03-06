@@ -117,9 +117,56 @@ if st.sidebar.button("Index Folder"):
     except Exception as exc:
         st.sidebar.error(f"Error contacting backend: {exc}")
 
+st.sidebar.divider()
+st.sidebar.header("🔍 Index Watcher")
+
+watch_folder = st.sidebar.text_input(
+    "Watch folder path",
+    value="data/sample_files/",
+    key="watch_folder_input"
+)
+
+col_start, col_stop = st.sidebar.columns(2)
+
+with col_start:
+    if st.button("Start", key="watcher_start"):
+        try:
+            wr = requests.post(
+                f"{API_BASE}/watcher/start",
+                params={"folder_path": watch_folder}
+            )
+            if wr.status_code == 200:
+                st.sidebar.success(wr.json().get("message", "Watcher started."))
+            else:
+                st.sidebar.error("Could not start watcher.")
+        except Exception as exc:
+            st.sidebar.error(f"Error: {exc}")
+
+with col_stop:
+    if st.button("Stop", key="watcher_stop"):
+        try:
+            wr = requests.post(f"{API_BASE}/watcher/stop")
+            if wr.status_code == 200:
+                st.sidebar.info(wr.json().get("message", "Watcher stopped."))
+            else:
+                st.sidebar.error("Could not stop watcher.")
+        except Exception as exc:
+            st.sidebar.error(f"Error: {exc}")
+
+try:
+    status_resp = requests.get(f"{API_BASE}/watcher/status", timeout=1)
+    if status_resp.status_code == 200:
+        ws = status_resp.json()
+        if ws.get("running"):
+            st.sidebar.success(f"Watcher: running — {ws.get('watched_folder', '')}")
+        else:
+            st.sidebar.caption("Watcher: stopped")
+except Exception:
+    st.sidebar.caption("Watcher: unavailable")
+
 
 # Tabs for main interface
-tab1, tab2 = st.tabs(["Memory Search", "Timeline"])
+tab1, tab2, tab3 = st.tabs(["Memory Search", "Timeline", "Indexed Files"])
 
 
 with tab1:
@@ -127,3 +174,35 @@ with tab1:
 
 with tab2:
     render_timeline_ui(API_BASE)
+
+with tab3:
+    st.subheader("📂 Indexed Files")
+    if st.button("Refresh list"):
+        st.session_state["indexed_files_cache"] = None
+
+    if st.session_state.get("indexed_files_cache") is None:
+        try:
+            resp = requests.get(f"{API_BASE}/indexed-files")
+            if resp.status_code == 200:
+                st.session_state["indexed_files_cache"] = resp.json().get("files", [])
+            else:
+                st.error("Could not fetch indexed files.")
+                st.session_state["indexed_files_cache"] = []
+        except Exception as exc:
+            st.error(f"Error: {exc}")
+            st.session_state["indexed_files_cache"] = []
+
+    files_list = st.session_state.get("indexed_files_cache", [])
+    if not files_list:
+        st.info("No files indexed yet.")
+    else:
+        st.caption(f"{len(files_list)} file(s) indexed")
+        for f in files_list:
+            col_name, col_size, col_path = st.columns([2, 1, 4])
+            with col_name:
+                st.write(f.get("file_name", "-"))
+            with col_size:
+                size_kb = f.get("file_size_kb", 0)
+                st.write(f"{size_kb} KB" if size_kb else "-")
+            with col_path:
+                st.caption(f.get("file_path", "-"))
