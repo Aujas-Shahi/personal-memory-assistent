@@ -76,15 +76,13 @@ pip install -r requirements.txt
 Start the backend server:
 
 ```bash
-cd backend
-uvicorn main:app --reload
+uvicorn backend.main:app --reload
 ```
 
 Start the frontend:
 
 ```bash
-cd frontend
-streamlit run app.py
+streamlit run frontend_streamlit/app.py
 ```
 
 The application will open in your browser at:
@@ -146,3 +144,4 @@ The system will return the most relevant files based on semantic similarity.
 ## License
 
 MIT License
+
