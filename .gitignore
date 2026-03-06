@@ -38,10 +38,16 @@ Thumbs.db
 
 data/chroma_db/
 
-# Large model cache (HuggingFace)
+# SQLite tag database
+
+data/tags.db
+
+# Large model cache (HuggingFace / sentence-transformers / CLIP)
 
 .cache/
+~/.cache/huggingface/
 .huggingface/
+models/
 
 # Streamlit cache
 
@@ -51,6 +57,10 @@ data/chroma_db/
 
 tmp/
 temp/
+
+# Uploaded / indexed files (user data — do not commit)
+
+data/sample_files/
 
 # Jupyter checkpoints
 
@@ -66,7 +76,3 @@ dist/
 
 coverage/
 htmlcov/
-
-# Local data (optional if you don't want demo data uploaded)
-
-data/sample_files/

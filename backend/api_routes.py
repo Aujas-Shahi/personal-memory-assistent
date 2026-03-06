@@ -3,10 +3,18 @@ import shutil
 import os
 
 from pipeline.ingestion_pipeline import process_file, process_folder
-from retrieval.search import search_memory
+from retrieval.search import search_memory, search_images_by_text, search_images_by_image, search_combined
 from retrieval.vector_store import get_indexed_file_snapshot
 from timeline.timeline_builder import build_timeline
 from watcher.index_watcher import start_watcher, stop_watcher, watcher_status
+from tagging.tag_store import (
+    get_file_tags,
+    add_manual_tag,
+    remove_tag_from_file,
+    get_all_tags,
+    get_files_by_tag,
+    delete_file_tags,
+)
 
 router = APIRouter()
 
@@ -74,6 +82,13 @@ def query_memory(query: str):
         "query": query,
         "results": results
     }
+
+
+@router.post("/query-combined")
+def query_combined(query: str, top_k: int = 10):
+    """Search text chunks + images + tag matches in one call."""
+    results = search_combined(query, top_k=top_k)
+    return {"query": query, **results}
 
 
 # -----------------------------
@@ -200,3 +215,51 @@ def stop_index_watcher():
 def get_watcher_status():
 
     return watcher_status()
+
+
+# -----------------------------
+# Tags
+# -----------------------------
+@router.get("/tags/file")
+def tags_for_file(file_path: str):
+    return {"file_path": file_path, "tags": get_file_tags(file_path)}
+
+
+@router.post("/tags/add")
+def tag_add(file_path: str, tag_name: str, parent_name: str = ""):
+    add_manual_tag(file_path, tag_name, parent_name or None)
+    return {"status": "ok"}
+
+
+@router.post("/tags/remove")
+def tag_remove(file_path: str, tag_name: str):
+    remove_tag_from_file(file_path, tag_name)
+    return {"status": "ok"}
+
+
+@router.get("/tags/all")
+def tags_all():
+    return {"tags": get_all_tags()}
+
+
+@router.get("/tags/files")
+def files_for_tag(tag_name: str):
+    return {"tag_name": tag_name, "files": get_files_by_tag(tag_name)}
+
+
+# -----------------------------
+# Image search
+# -----------------------------
+@router.post("/query-images")
+def query_images_text(query: str):
+    """Find similar images using a text description."""
+    results = search_images_by_text(query)
+    return {"query": query, "results": results}
+
+
+@router.post("/query-by-image")
+async def query_by_image(file: UploadFile = File(...)):
+    """Find visually similar images by uploading a query image."""
+    image_bytes = await file.read()
+    results = search_images_by_image(image_bytes)
+    return {"results": results}

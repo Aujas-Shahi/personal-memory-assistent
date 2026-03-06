@@ -166,7 +166,7 @@ except Exception:
 
 
 # Tabs for main interface
-tab1, tab2, tab3 = st.tabs(["Memory Search", "Timeline", "Indexed Files"])
+tab1, tab2, tab3, tab4 = st.tabs(["Memory Search", "Timeline", "Indexed Files", "Tags"])
 
 
 with tab1:
@@ -206,3 +206,63 @@ with tab3:
                 st.write(f"{size_kb} KB" if size_kb else "-")
             with col_path:
                 st.caption(f.get("file_path", "-"))
+
+with tab4:
+    st.subheader("🏷️ Tags")
+
+    if st.button("Refresh tags"):
+        st.session_state["tags_cache"] = None
+
+    if st.session_state.get("tags_cache") is None:
+        try:
+            resp = requests.get(f"{API_BASE}/tags/all")
+            if resp.status_code == 200:
+                st.session_state["tags_cache"] = resp.json().get("tags", [])
+            else:
+                st.session_state["tags_cache"] = []
+        except Exception as exc:
+            st.error(f"Could not load tags: {exc}")
+            st.session_state["tags_cache"] = []
+
+    all_tags = st.session_state.get("tags_cache", [])
+
+    if not all_tags:
+        st.info("No tags yet. Index some image files to generate auto-tags.")
+    else:
+        # Group by parent
+        parents: dict[str, list] = {}
+        for t in all_tags:
+            p = t.get("parent_name") or "— (top level)"
+            parents.setdefault(p, []).append(t)
+
+        tag_search = st.text_input("Filter tags", placeholder="type to filter…")
+
+        for parent_name, children in sorted(parents.items()):
+            if tag_search:
+                children = [c for c in children if tag_search.lower() in c["name"].lower()]
+            if not children:
+                continue
+            with st.expander(f"**{parent_name}** ({len(children)})", expanded=False):
+                for tag in children:
+                    col_tag, col_count, col_browse = st.columns([3, 1, 1])
+                    with col_tag:
+                        st.markdown(f"`{tag['name']}`")
+                    with col_count:
+                        st.caption(f"{tag.get('file_count', 0)} files")
+                    with col_browse:
+                        if st.button("Browse", key=f"browse_{tag['id']}"):
+                            try:
+                                fr = requests.get(
+                                    f"{API_BASE}/tags/files",
+                                    params={"tag_name": tag["name"]}
+                                )
+                                if fr.status_code == 200:
+                                    tag_files = fr.json().get("files", [])
+                                    st.session_state[f"tag_files_{tag['id']}"] = tag_files
+                            except Exception as exc:
+                                st.error(str(exc))
+
+                    tag_file_key = f"tag_files_{tag['id']}"
+                    if st.session_state.get(tag_file_key):
+                        for fp in st.session_state[tag_file_key]:
+                            st.caption(fp)

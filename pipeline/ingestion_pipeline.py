@@ -11,16 +11,49 @@ from retrieval.vector_store import (
     get_collection_count,
     delete_vectors_for_file,
     get_indexed_file_snapshot,
+    store_image_vector,
+    delete_image_vector,
 )
 
 
 SUPPORTED_EXTENSIONS = {".pdf", ".txt", ".docx", ".pptx", ".png", ".jpg", ".jpeg"}
+IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg"}
 
 
 def process_file(file_path: str, use_ocr: bool = True):
     """
     Full ingestion pipeline for indexing a file into the vector database.
+    Images are also stored in the CLIP image collection and auto-tagged.
     """
+
+    ext = os.path.splitext(file_path)[1].lower()
+    file_mtime = os.path.getmtime(file_path)
+    file_size = os.path.getsize(file_path)
+    filename = os.path.basename(file_path)
+
+    # --- CLIP image embedding + auto-tagging (images only) ---
+    if ext in IMAGE_EXTENSIONS:
+        try:
+            from retrieval.clip_embedder import embed_image
+            img_emb = embed_image(file_path)
+            delete_image_vector(file_path)
+            store_image_vector(file_path, img_emb, file_mtime, file_size)
+        except Exception as exc:
+            return {"status": "failed", "reason": f"CLIP embedding failed: {exc}"}
+
+        try:
+            from tagging.auto_tagger import auto_tag_image
+            from tagging.tag_store import set_file_tags
+            tags, parent_map = auto_tag_image(file_path)
+            set_file_tags(file_path, tags, auto_tagged=True, parent_map=parent_map)
+        except Exception:
+            pass  # tagging failure is non-fatal
+
+        return {
+            "status": "success",
+            "chunks_indexed": 0,
+            "image_indexed": True,
+        }
 
     # Step 1: Load file metadata
     file_data = load_file(file_path)
@@ -45,11 +78,6 @@ def process_file(file_path: str, use_ocr: bool = True):
 
     # Step 4: Generate embeddings
     embeddings = embed_chunks(chunks)
-
-    # Get filename from path
-    filename = os.path.basename(file_path)
-    file_mtime = os.path.getmtime(file_path)
-    file_size = os.path.getsize(file_path)
 
     # Replace previous chunks for the same file path to avoid duplicates.
     delete_vectors_for_file(file_path)
