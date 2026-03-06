@@ -4,6 +4,9 @@ chromadb
 sentence-transformers
 pypdf
 python-docx
+python-pptx
+pillow
+pytesseract
 streamlit
 requests
 numpy

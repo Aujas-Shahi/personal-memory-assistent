@@ -14,6 +14,7 @@ class QueryRequest(BaseModel):
 # -----------------------------
 class SearchResult(BaseModel):
     file_name: str
+    file_path: str
     chunk_text: str
     similarity_score: float
 
@@ -33,6 +34,20 @@ class UploadResponse(BaseModel):
     message: str
     file_name: str
     chunks_indexed: int
+
+
+class FolderIndexFailure(BaseModel):
+    file: str
+    reason: str
+
+
+class FolderIndexResponse(BaseModel):
+    status: str
+    folder: Optional[str] = None
+    files_indexed: int
+    chunks_indexed: int
+    failed_files: List[FolderIndexFailure] = []
+    reason: Optional[str] = None
 
 
 # -----------------------------

@@ -9,10 +9,12 @@ The assistant indexes personal files, converts them into embeddings, and allows 
 ## Features (Current Version)
 
 * Upload files (PDF, TXT, images)
+* Index entire folders recursively (PDF, TXT, DOCX)
 * Extract text from files
 * Generate embeddings
 * Store embeddings in a vector database
 * Semantic search for file retrieval
+* Search results with source file path metadata
 * Simple chat-style interface
 
 ---
@@ -106,9 +108,15 @@ python scripts/index_files.py
 This will:
 
 1. Read files from the `data/` folder
+2. Recursively scan subfolders under `data/sample_files`
 2. Extract text
 3. Generate embeddings
 4. Store them in the vector database
+
+The Streamlit sidebar also supports folder indexing through:
+
+* `Index Demo Folder` -> enter path (default: `data/sample_files`)
+* Click `Index Folder`
 
 ---
 

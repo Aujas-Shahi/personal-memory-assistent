@@ -3,9 +3,6 @@ import requests
 
 
 def render_chat_ui(api_base):
-    """
-    Render the semantic search interface.
-    """
 
     st.subheader("🔎 Search Your Memories")
 
@@ -36,17 +33,23 @@ def render_chat_ui(api_base):
 
             st.markdown("### Results")
 
+            current_file = None
+
             for result in results:
 
-                st.container()
+                if result["file_name"] != current_file:
+                    current_file = result["file_name"]
+                    st.markdown(f"## 📄 {current_file}")
 
-                st.markdown(f"**File:** {result['file_name']}")
+                file_path = result.get("file_path", "")
+                if file_path:
+                    st.caption(f"Path: {file_path}")
 
                 st.markdown("**Relevant Text:**")
                 st.write(result["chunk_text"])
 
                 st.markdown(
-                    f"**Similarity Score:** {round(result['similarity_score'], 3)}"
+                    f"**Match Score:** {round(result['similarity_score'] * 100, 1)}%"
                 )
 
                 st.divider()

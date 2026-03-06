@@ -1,35 +1,37 @@
 import os
-from pipeline.ingestion_pipeline import process_file
+from pipeline.ingestion_pipeline import process_folder
 
 DATA_FOLDER = "data/sample_files"
 
 
 def index_all_files():
     """
-    Index all files inside the sample_files directory.
+    Recursively index supported files in the sample_files directory.
     """
 
     if not os.path.exists(DATA_FOLDER):
         print("Data folder not found.")
         return
 
-    files = os.listdir(DATA_FOLDER)
-
-    if not files:
+    if not os.listdir(DATA_FOLDER):
         print("No files found to index.")
         return
 
-    for file_name in files:
+    result = process_folder(
+        DATA_FOLDER,
+        reset_index=False,
+        incremental=True,
+        use_ocr=False,
+    )
+    print(f"Indexed files: {result.get('files_indexed', 0)}")
+    print(f"Skipped files: {result.get('files_skipped', 0)}")
+    print(f"Indexed chunks: {result.get('chunks_indexed', 0)}")
 
-        file_path = os.path.join(DATA_FOLDER, file_name)
-
-        if os.path.isfile(file_path):
-
-            print(f"Indexing file: {file_name}")
-
-            result = process_file(file_path)
-
-            print(result)
+    failed_files = result.get("failed_files", [])
+    if failed_files:
+        print("Failed files:")
+        for failed in failed_files:
+            print(f"- {failed.get('file')}: {failed.get('reason')}")
 
 
 if __name__ == "__main__":
