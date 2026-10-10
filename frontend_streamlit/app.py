@@ -1,3 +1,5 @@
+import os
+
 import streamlit as st
 import requests
 
@@ -5,7 +7,9 @@ from chat_ui import render_chat_ui
 from timeline_ui import render_timeline_ui
 
 
-API_BASE = "http://127.0.0.1:8000"
+API_BASE = os.getenv("PMA_API_URL", "http://127.0.0.1:8000").rstrip("/")
+# Relative paths are resolved by the backend against the repository root.
+DEFAULT_FOLDER = os.getenv("PMA_FILES_DIR", "data/sample_files/")
 
 
 st.set_page_config(
@@ -44,7 +48,7 @@ st.sidebar.header("Index Demo Folder")
 
 demo_folder_path = st.sidebar.text_input(
     "Folder path",
-    value="data/sample_files/"
+    value=DEFAULT_FOLDER
 )
 
 reset_index = st.sidebar.checkbox(
@@ -122,7 +126,7 @@ st.sidebar.header("🔍 Index Watcher")
 
 watch_folder = st.sidebar.text_input(
     "Watch folder path",
-    value="data/sample_files/",
+    value=DEFAULT_FOLDER,
     key="watch_folder_input"
 )
 

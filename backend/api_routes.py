@@ -2,6 +2,7 @@ from fastapi import APIRouter, UploadFile, File
 import shutil
 import os
 
+from config.settings import FILES_DIR, normalize_path
 from pipeline.ingestion_pipeline import process_file, process_folder
 from retrieval.search import search_memory, search_images_by_text, search_images_by_image, search_combined
 from retrieval.vector_store import get_indexed_file_snapshot
@@ -18,7 +19,7 @@ from tagging.tag_store import (
 
 router = APIRouter()
 
-UPLOAD_FOLDER = "data/sample_files"
+UPLOAD_FOLDER = FILES_DIR
 
 
 # -----------------------------
@@ -28,7 +29,7 @@ UPLOAD_FOLDER = "data/sample_files"
 async def upload_file(file: UploadFile = File(...)):
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-    file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+    file_path = os.path.join(UPLOAD_FOLDER, os.path.basename(file.filename))
 
     # save uploaded file
     with open(file_path, "wb") as buffer:
@@ -129,6 +130,8 @@ def list_indexed_files():
 @router.get("/preview")
 def preview_file(file_path: str, max_chars: int = 2000):
 
+    file_path = normalize_path(file_path)
+
     if not os.path.exists(file_path):
         return {"error": "File not found", "preview": ""}
 
@@ -197,6 +200,7 @@ def preview_file(file_path: str, max_chars: int = 2000):
 @router.post("/watcher/start")
 def start_index_watcher(folder_path: str):
 
+    folder_path = normalize_path(folder_path)
     success = start_watcher(folder_path)
 
     if success:
@@ -222,17 +226,20 @@ def get_watcher_status():
 # -----------------------------
 @router.get("/tags/file")
 def tags_for_file(file_path: str):
+    file_path = normalize_path(file_path)
     return {"file_path": file_path, "tags": get_file_tags(file_path)}
 
 
 @router.post("/tags/add")
 def tag_add(file_path: str, tag_name: str, parent_name: str = ""):
+    file_path = normalize_path(file_path)
     add_manual_tag(file_path, tag_name, parent_name or None)
     return {"status": "ok"}
 
 
 @router.post("/tags/remove")
 def tag_remove(file_path: str, tag_name: str):
+    file_path = normalize_path(file_path)
     remove_tag_from_file(file_path, tag_name)
     return {"status": "ok"}
 

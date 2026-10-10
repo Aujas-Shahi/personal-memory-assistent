@@ -1,10 +1,12 @@
 import chromadb
 import uuid
 
+from config.settings import CHROMA_DIR
+
 COLLECTION_NAME = "memory_chunks"
 IMAGE_COLLECTION_NAME = "memory_images"
 
-client = chromadb.PersistentClient(path="data/chroma_db")
+client = chromadb.PersistentClient(path=CHROMA_DIR)
 collection = client.get_or_create_collection(name=COLLECTION_NAME)
 # Cosine distance is the correct metric for CLIP embeddings.
 image_collection = client.get_or_create_collection(
@@ -65,7 +67,7 @@ def reset_collection():
     image_collection = client.get_or_create_collection(
         name=IMAGE_COLLECTION_NAME,
         metadata={"hnsw:space": "cosine"},
-)
+    )
 
 
 def get_collection_count():

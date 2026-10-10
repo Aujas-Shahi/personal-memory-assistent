@@ -1,7 +1,13 @@
 import os
+import sys
+
+# Allow running as `python scripts/index_files.py`.
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from config.settings import FILES_DIR
 from pipeline.ingestion_pipeline import process_folder
 
-DATA_FOLDER = "data/sample_files"
+DATA_FOLDER = FILES_DIR
 
 
 def index_all_files():

@@ -1,78 +1,60 @@
 # Python bytecode
-
-**pycache**/
+__pycache__/
 *.py[cod]
 *$py.class
 
 # Virtual environments
-
 venv/
 env/
 .venv/
-
-# Python environment files
-
 .python-version
 
 # IDE / Editor
-
 .vscode/
 .idea/
 *.swp
 *.swo
 
 # OS files
-
 .DS_Store
+._*
 Thumbs.db
 
 # Logs
-
 *.log
 
 # Environment variables
-
 .env
 
-# ChromaDB vector storage
-
+# Generated indexes (rebuilt by indexing)
 data/chroma_db/
-
-# SQLite tag database
-
 data/tags.db
 
-# Large model cache (HuggingFace / sentence-transformers / CLIP)
+# User files to index — personal data, never commit (folder kept via .gitkeep)
+data/sample_files/*
+!data/sample_files/.gitkeep
 
+# Model caches (HuggingFace / sentence-transformers / CLIP)
 .cache/
-~/.cache/huggingface/
 .huggingface/
 models/
 
-# Streamlit cache
-
+# Streamlit local config
 .streamlit/
 
 # Temporary files
-
 tmp/
 temp/
 
-# Uploaded / indexed files (user data — do not commit)
-
-data/sample_files/
-
 # Jupyter checkpoints
-
 .ipynb_checkpoints/
 
 # Python build files
-
 build/
 dist/
 *.egg-info/
 
-# Test / debug files
-
+# Test / coverage output
+.coverage
 coverage/
 htmlcov/

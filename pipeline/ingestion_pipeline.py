@@ -1,5 +1,7 @@
 import os
 import time
+
+from config.settings import normalize_path
 from ingestion.file_loader import load_file
 from ingestion.text_extractor import extract_text
 from ingestion.chunking import chunk_text
@@ -26,6 +28,7 @@ def process_file(file_path: str, use_ocr: bool = True):
     Images are also stored in the CLIP image collection and auto-tagged.
     """
 
+    file_path = normalize_path(file_path)
     ext = os.path.splitext(file_path)[1].lower()
     file_mtime = os.path.getmtime(file_path)
     file_size = os.path.getsize(file_path)
@@ -91,6 +94,19 @@ def process_file(file_path: str, use_ocr: bool = True):
     }
 
 
+def remove_file(file_path: str):
+    """
+    Drop everything indexed for a file: text chunks, image vector and tags.
+    """
+
+    file_path = normalize_path(file_path)
+    delete_vectors_for_file(file_path)
+    delete_image_vector(file_path)
+
+    from tagging.tag_store import delete_file_tags
+    delete_file_tags(file_path)
+
+
 def process_folder(
     folder_path: str,
     reset_index: bool = False,
@@ -100,6 +116,8 @@ def process_folder(
     """
     Recursively index supported files in a folder.
     """
+
+    folder_path = normalize_path(folder_path)
 
     if not os.path.isdir(folder_path):
         return {
@@ -112,6 +130,9 @@ def process_folder(
 
     if reset_index:
         reset_collection()
+
+        from tagging.tag_store import clear_all_file_tags
+        clear_all_file_tags()
 
     start_time = time.perf_counter()
 

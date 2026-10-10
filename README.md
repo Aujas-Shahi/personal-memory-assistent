@@ -46,11 +46,11 @@ The assistant indexes personal files into dense vector embeddings and supports n
 ## Project Structure
 
 ```
-personal-memory-assistant/
+personal-memory-assistent/
 │
 ├── backend/               # FastAPI server and API routes
-├── config/                # Embedding config
-├── data/                  # ChromaDB, SQLite tags.db, sample files
+├── config/                # Paths and env-var settings (settings.py)
+├── data/                  # Local only (gitignored): ChromaDB index, tags.db, your files
 ├── frontend_streamlit/    # Streamlit UI (app.py, chat_ui.py, timeline_ui.py)
 ├── ingestion/             # File loading, text extraction, chunking
 ├── pipeline/              # Ingestion orchestration (incremental + watcher)
@@ -59,10 +59,21 @@ personal-memory-assistant/
 ├── tagging/               # Auto-tagger, tag store (SQLite)
 ├── timeline/              # Timeline builder
 ├── watcher/               # Filesystem index watcher
+├── tests/                 # pytest suite
 ├── requirements.txt
 ├── TECHNICAL_REPORT.md    # Full technical documentation
 └── README.md
 ```
+
+---
+
+## Requirements
+
+- Python 3.10+ (developed on 3.13/3.14)
+- [Tesseract OCR](https://github.com/tesseract-ocr/tesseract) system binary — optional, only needed for scanned PDFs and slide images
+  - Ubuntu/Debian: `sudo apt install tesseract-ocr`
+  - macOS: `brew install tesseract`
+- ~1 GB disk for model downloads (MiniLM + CLIP are fetched from Hugging Face on first run)
 
 ---
 
@@ -71,8 +82,8 @@ personal-memory-assistant/
 Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/personal-memory-assistant.git
-cd personal-memory-assistant
+git clone https://github.com/Aujas-Shahi/personal-memory-assistent.git
+cd personal-memory-assistent
 ```
 
 Create a virtual environment:
@@ -103,7 +114,17 @@ pip install -r requirements.txt
 
 ---
 
+## Adding Your Files
+
+No dataset ships with this repository. Put the documents and images you want to search into `data/sample_files/` (subfolders are fine), or point the indexer at any folder on your machine from the Streamlit sidebar.
+
+Everything under `data/` stays on your machine: the vector index (`data/chroma_db/`), the tag database (`data/tags.db`), and your files are all gitignored.
+
+---
+
 ## Running the Application
+
+Run all commands from the repository root.
 
 Start the backend server:
 
@@ -121,11 +142,27 @@ The application will open in your browser at `http://localhost:8501`.
 
 ---
 
+## Configuration
+
+All settings are optional environment variables. Relative paths resolve against the repository root.
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `PMA_DATA_DIR` | `data` | Base folder for everything below |
+| `PMA_FILES_DIR` | `$PMA_DATA_DIR/sample_files` | Default folder to index, upload into, and show in the timeline |
+| `PMA_CHROMA_DIR` | `$PMA_DATA_DIR/chroma_db` | ChromaDB vector index |
+| `PMA_TAGS_DB` | `$PMA_DATA_DIR/tags.db` | SQLite tag database |
+| `PMA_API_URL` | `http://127.0.0.1:8000` | Backend address used by the Streamlit UI |
+
+Example: `PMA_FILES_DIR=~/Documents uvicorn backend.main:app --reload`
+
+---
+
 ## Indexing Files
 
 Before searching, files must be indexed. There are three ways:
 
-**CLI script:**
+**CLI script** (incremental, OCR off):
 ```bash
 python scripts/index_files.py
 ```
@@ -145,6 +182,23 @@ The pipeline will:
 3. Chunk text with sentence-boundary-aware splitting (500-char chunks, 100-char overlap)
 4. Encode chunks with `all-MiniLM-L6-v2` (384-dim) and store in ChromaDB `memory_chunks`
 5. For images: encode with CLIP ViT-B/32 (512-dim, cosine), store in `memory_images`, and auto-tag via zero-shot classification
+
+**Notes**
+- Encrypted PDFs, scanned PDFs without OCR, and macOS `._*` metadata files fail to index. They are listed under failed files and the rest of the folder still indexes.
+- For a clean re-index, enable **Clear existing index first** (`reset_index=true`) so chunks from previously indexed data don't linger.
+- File paths are stored as absolute paths. If you have an index built by an older version (relative paths), re-index once with **Clear existing index first**.
+- If the UI shows `Error contacting backend … Connection refused`, the FastAPI server isn't running (or failed to start). Check the uvicorn terminal.
+
+---
+
+## Running Tests
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
+
+The tests use a temporary data directory and a stub embedder, so they don't download models or touch your index. They also run on every push via GitHub Actions.
 
 ---
 
@@ -191,5 +245,5 @@ white marble monument
 
 ## License
 
-MIT License
+[MIT](LICENSE)
 

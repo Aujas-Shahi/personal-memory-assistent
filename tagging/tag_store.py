@@ -13,7 +13,7 @@ import sqlite3
 import os
 from typing import Optional
 
-DB_PATH = "data/tags.db"
+from config.settings import TAGS_DB_PATH as DB_PATH
 
 
 def _connect() -> sqlite3.Connection:
@@ -182,6 +182,13 @@ def get_files_by_tag(tag_name: str) -> list[str]:
         ).fetchall()
 
     return [r["file_path"] for r in rows]
+
+
+def clear_all_file_tags():
+    """Remove every file-tag association (used when the index is reset)."""
+    init_db()
+    with _connect() as conn:
+        conn.execute("DELETE FROM file_tags")
 
 
 def delete_file_tags(file_path: str):

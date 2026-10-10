@@ -14,8 +14,8 @@ except ImportError:
 # Allow running from project root.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from pipeline.ingestion_pipeline import process_file, SUPPORTED_EXTENSIONS
-from retrieval.vector_store import delete_vectors_for_file
+from config.settings import normalize_path
+from pipeline.ingestion_pipeline import process_file, remove_file, SUPPORTED_EXTENSIONS
 
 logger = logging.getLogger("index_watcher")
 logging.basicConfig(level=logging.INFO, format="[Watcher] %(message)s")
@@ -70,13 +70,13 @@ class _FileChangeHandler(FileSystemEventHandler):
     def on_moved(self, event):
         if not event.is_directory:
             # Remove old path, index new path.
-            delete_vectors_for_file(event.src_path)
+            remove_file(event.src_path)
             logger.info(f"Removed moved file: {event.src_path}")
             self._handle(event.dest_path)
 
     def on_deleted(self, event):
         if not event.is_directory:
-            delete_vectors_for_file(event.src_path)
+            remove_file(event.src_path)
             logger.info(f"Removed deleted file: {event.src_path}")
 
 
@@ -108,6 +108,8 @@ _watched_path = None
 
 def start_watcher(folder_path: str):
     global _observer, _flush_thread, _watched_path
+
+    folder_path = normalize_path(folder_path)
 
     if Observer is None:
         logger.error(

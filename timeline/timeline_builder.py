@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-DATA_FOLDER = "data/sample_files"
+from config.settings import FILES_DIR as DATA_FOLDER
 
 
 def build_timeline():
