@@ -1,0 +1,19 @@
+PROJECT SYNC NOTES - PERSONAL FILE SEARCH PROTOTYPE
+===================================================
+Fictional demo record | For semantic-search testing only
+
+MEETING RECORD
+--------------
+Date: 14 February 2026, 15:00-15:35 IST. Location: online call. Participants: Aarav Demo (engineering), Isha Sen (evaluation), Kabir Das (UI), and fictional mentor Tara Menon. Project: local-first semantic file search prototype for a college demonstration. Notes prepared by Aarav after the call.
+
+DISCUSSION
+----------
+1. Parsing: TXT extraction is straightforward. DOCX paragraph order must be retained, and tables need to be flattened into readable rows. PPTX needs slide titles, body text and speaker notes only if available. Log skipped files rather than silently producing empty documents.
+2. Retrieval: create one chunk per short document and split longer material at section boundaries. Preserve path, extension, modification date and original filename as metadata. Use a lexical baseline before tuning vector similarity. Exact identifiers such as invoice numbers should still be searchable.
+3. Ranking: blend semantic similarity with optional filename match and date filters. Numeric-heavy exports may appear semantically close because they contain many category tokens, so test down-ranking tables when natural-language queries are clearly unrelated. Do not universally discard tables; a query for a bill amount should still retrieve a billing table.
+4. Privacy: keep the sample corpus synthetic. For a local demo, explain where embeddings are stored and whether any content leaves the machine. Do not index browser profiles, authentication tokens, or private chat exports.
+
+ACTION ITEMS
+------------
+Aarav: produce a 30-query evaluation sheet by 18 February. Isha: create relevant/partially relevant/irrelevant judgments for each query. Kabir: add file-type and folder filters plus a result excerpt. Mentor: review the error analysis before the class demo. Next meeting: 19 February at 16:00 IST.
+Open decision: whether to chunk all tables row-by-row or preserve a whole-table representation. Proposed experiment: compare both methods using budget, electricity statement and raw numeric dump queries. Success means predictable retrieval, not merely returning a plausible result for one hand-picked example.

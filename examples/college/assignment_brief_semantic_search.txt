@@ -1,0 +1,25 @@
+MINI PROJECT BRIEF: SEMANTIC SEARCH FOR STUDENT FILES
+=====================================================
+Fictional demo record | For semantic-search testing only
+
+ASSIGNMENT DETAILS
+------------------
+Course: Information Retrieval Lab | Issued: 7 January 2026 | Submission deadline: 6 February 2026, 23:59 IST. This brief is fictional and created for a portfolio-style college exercise. Teams of two may build a local search prototype that retrieves relevant personal-study documents even when the query does not repeat the exact wording in the file.
+
+PROBLEM STATEMENT
+-----------------
+A student keeps lecture summaries, payment records, booking confirmations, notes and project drafts in folders with inconsistent file names. A keyword-only search can miss a rent receipt when the query says “accommodation payment proof,” or a power bill when the query says “electricity charges.” Build a system that ranks documents by meaning while still supporting filters for folder, file type and date.
+The starter corpus should contain TXT, DOCX and PPTX documents. Preserve folder paths as metadata. Extract text from each supported format, split long documents into useful chunks, compute embeddings, and store chunk-to-file references. A result must point back to the original file and show a short matching excerpt.
+
+MINIMUM REQUIREMENTS
+--------------------
+• Support at least 20 documents across five topical folders.
+• Compare lexical retrieval with embedding-based retrieval on a small set of judged queries.
+• Include at least ten query-document examples, including synonyms and ambiguous queries.
+• Provide a brief error analysis covering irrelevant numeric tables, duplicated phrases, dates and currency amounts.
+• Document limitations, setup instructions and a privacy statement explaining that the supplied sample records are fictional.
+
+ASSESSMENT RUBRIC
+-----------------
+Relevance and ranking quality: 30%; extraction and format coverage: 20%; reproducibility and code clarity: 20%; evaluation design: 20%; documentation and demo quality: 10%. A sophisticated interface does not compensate for weak evaluation. Report a baseline, describe how relevance judgments were created, and include at least three queries where your system performs poorly.
+Submission package: source code, README, query set, evaluation table and a 4-minute screen recording. Do not upload genuine identity documents, private messages or live account credentials. Use synthetic data in the demonstration.

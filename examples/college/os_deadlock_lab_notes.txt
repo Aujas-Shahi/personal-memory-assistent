@@ -1,0 +1,17 @@
+OS LAB: DEADLOCK DETECTION AND RECOVERY
+=======================================
+Fictional demo record | For semantic-search testing only
+
+LAB RECORD
+----------
+Lab performed: 16 September 2025. Objective: explain how circular waiting can prevent a set of processes from progressing, then apply detection and recovery strategies to a small allocation example. Deadlock requires four conditions: mutual exclusion, hold and wait, no pre-emption, and circular wait. Breaking any one necessary condition can prevent deadlock, although the chosen policy may reduce utilisation or fairness.
+
+WORKED SCENARIO
+---------------
+Assume three tasks T1, T2 and T3 and three single-instance resources R, S and T. T1 holds R and requests S; T2 holds S and requests T; T3 holds T and requests R. The wait cycle T1 -> T2 -> T3 -> T1 shows a circular dependency. In a resource-allocation graph with one instance per resource type, a cycle indicates deadlock. With multiple instances, a cycle alone is not sufficient to prove deadlock.
+Prevention designs the system so one necessary condition cannot hold. Avoiding deadlock, for example with the Banker’s algorithm, requires knowledge of maximum future resource claims and grants requests only when the resulting state remains safe. Detection allows deadlocks to happen, then looks for cycles or uses a matrix-based algorithm. Recovery can terminate one or more processes or pre-empt resources if rollback is feasible.
+
+PRACTICAL OBSERVATIONS
+----------------------
+Do not confuse starvation with deadlock. Starvation is indefinite delay because a scheduler or resource policy repeatedly favours other work; the system may still make progress. A deadlocked set cannot proceed without external intervention. In a report, include assumptions, the initial allocation and request matrices, the order in which any safe sequence is found, and the limitations of the model.
+Test idea: ask the search engine for “tasks waiting forever for each other” and verify that it retrieves these notes even though the query avoids the term deadlock. Another useful query is “how to break a circular resource dependency.”

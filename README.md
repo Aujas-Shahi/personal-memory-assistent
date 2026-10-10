@@ -50,6 +50,7 @@ personal-memory-assistent/
 │
 ├── backend/               # FastAPI server and API routes
 ├── config/                # Paths and env-var settings (settings.py)
+├── examples/              # Small synthetic demo corpus (committed)
 ├── data/                  # Local only (gitignored): ChromaDB index, tags.db, your files
 ├── frontend_streamlit/    # Streamlit UI (app.py, chat_ui.py, timeline_ui.py)
 ├── ingestion/             # File loading, text extraction, chunking
@@ -117,6 +118,8 @@ pip install -r requirements.txt
 ## Adding Your Files
 
 No dataset ships with this repository. Put the documents and images you want to search into `data/sample_files/` (subfolders are fine), or point the indexer at any folder on your machine from the Streamlit sidebar.
+
+To try the project without your own files, index the bundled synthetic corpus in [`examples/`](examples/) (30 fictional bills, notes, itineraries and slides). See [`examples/README.md`](examples/README.md) for suggested queries.
 
 Everything under `data/` stays on your machine: the vector index (`data/chroma_db/`), the tag database (`data/tags.db`), and your files are all gitignored.
 

@@ -1,0 +1,31 @@
+CPU SCHEDULING LAB MEASUREMENTS - RAW NUMERIC LOG
+=================================================
+Fictional demo record | For semantic-search testing only
+
+CAPTURE METADATA
+----------------
+Collected in a fictional classroom simulation on 22 September 2025. Units: milliseconds unless a column says otherwise. Values are synthetic and exist primarily to test whether a semantic search engine overweights numeric tokens. Interpret the label and context before returning this file for natural-language questions.
+
+MEASUREMENTS
+------------
+Run | Quantum_ms | Jobs | ContextSwitches | MeanWait_ms | MeanTurnaround_ms | CPU_Util_pct
+----+------------+------+-----------------+-------------+-------------------+-------------
+01 | 2 | 8 | 41 | 15.6 | 33.1 | 81.2
+02 | 4 | 8 | 24 | 17.4 | 35.0 | 86.7
+03 | 6 | 8 | 17 | 18.1 | 36.5 | 89.2
+04 | 8 | 8 | 13 | 19.9 | 38.0 | 91.0
+05 | 10 | 8 | 11 | 22.3 | 40.6 | 92.4
+06 | 2 | 12 | 63 | 18.8 | 41.2 | 78.9
+07 | 4 | 12 | 38 | 20.1 | 43.4 | 84.4
+08 | 6 | 12 | 27 | 22.6 | 46.0 | 87.3
+09 | 8 | 12 | 20 | 24.5 | 49.2 | 89.8
+10 | 10 | 12 | 16 | 27.0 | 51.7 | 90.2
+11 | 3 | 5 | 14 | 8.5 | 17.2 | 83.0
+12 | 5 | 5 | 9 | 9.4 | 18.9 | 88.5
+13 | 7 | 5 | 7 | 10.3 | 20.6 | 91.4
+14 | 9 | 5 | 6 | 12.8 | 22.1 | 92.0
+15 | 11 | 5 | 5 | 14.7 | 24.8 | 93.1
+
+OPERATOR COMMENTS
+-----------------
+Observation A: fewer switches are usually observed with a longer time quantum in this bounded workload. Observation B: this table alone is not enough to claim that the longest quantum produces the best user experience. Response time, fairness, interactive behaviour and workload mix also matter. No values should be treated as a benchmark for production hardware. The numeric fields are intentionally dense; a query asking for a counselling notice or a Goa travel route should not return this file merely because it contains many tokens.

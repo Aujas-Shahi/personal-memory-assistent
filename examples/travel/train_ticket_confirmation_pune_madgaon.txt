@@ -1,0 +1,17 @@
+RAIL TICKET CONFIRMATION - PUNE TO MADGAON
+==========================================
+Fictional demo record | For semantic-search testing only
+
+BOOKING SUMMARY
+---------------
+Rail service: Konkan Coast Express (fictional demo service name). PNR: DEMO2601145832. Booking created: 20 December 2025. Journey date: 14 January 2026, Wednesday. From: Pune Junction (PUNE). To: Madgaon Junction (MAO), Goa. Boarding time shown in this mock record: 18:40; expected arrival: 08:15 on 15 January. Always check a real railway source for actual services and timings.
+
+PASSENGER AND FARE DETAILS
+--------------------------
+Passenger 1: Aarav Demo, adult, berth preference lower. Passenger 2: Isha Sen, adult, berth preference side lower. Passenger 3: Kabir Das, adult, berth preference no preference. Names are invented and are not associated with genuine identity numbers. Class: Sleeper (SL). Status at mock issue time: CNF for all three passengers; coach and berth numbers are intentionally omitted.
+Base fare: ₹1,020 per traveller; reservation and service charges: ₹75 per traveller. Total paid for three passengers: ₹3,285. Payment mode: demo UPI transaction, reference RAIL-DEMO-1220-7338. Ticket receipt saved for group expense splitting.
+
+BEFORE DEPARTURE
+----------------
+Reach Pune Junction 45 minutes before boarding and confirm the platform display after arriving. Each passenger should carry valid identification matching their ticket; no ID number is stored in this sample. Pack water, light food and a small bag that fits near the berth. If plans change, review the railway operator’s real cancellation policy rather than using this synthetic note.
+The reservation record is useful for queries such as “train booking proof,” “rail ticket,” “Pune to Goa journey,” or “departure confirmation.” It is not a live ticket, cannot be used to board any train, and has no authentic booking reference.

@@ -1,0 +1,16 @@
+RENT RECEIPT FOR NOVEMBER 2025
+==============================
+Fictional demo record | For semantic-search testing only
+
+RECEIPT PARTICULARS
+-------------------
+Receipt no.: MCR-DEMO-2025-11-044. Date issued: 2 November 2025. This is a fictional accommodation receipt. Owner/manager: Maple Court Student Housing, represented by fictional manager Nikhil Rao. Occupant: Aarav Demo. Premises: Flat 204, Maple Court, Aundh, Pune, Maharashtra 411007.
+
+PAYMENT ACKNOWLEDGEMENT
+-----------------------
+Received ₹9,500 (Rupees Nine Thousand Five Hundred only) as monthly rent for the period 1 November to 30 November 2025. Payment mode: UPI transfer, demo transaction ID UPI-DEMO-251102-9941. Rent component: ₹8,800; common-area upkeep: ₹500; water allocation: ₹200. Electricity and Wi-Fi are excluded and are settled separately. Outstanding rent balance after this payment: ₹0.00.
+The receipt was generated after the resident checked the bank entry against the manager’s ledger. The resident keeps this proof of payment for budgeting and any future deposit reconciliation. The record does not contain an actual bank account, phone number, tax identifier or scannable payment code.
+
+ADMINISTRATIVE NOTES
+--------------------
+For renewal discussions, the current monthly rent is expected to remain at ₹9,500 through February 2026, subject to a written agreement. The security deposit is recorded elsewhere and must not be mistaken for rent paid for this month. The manager recommends naming future files with the property nickname and period, such as “Maple rent Dec 2025,” so that an accommodation payment can be found by date or purpose.

@@ -1,0 +1,22 @@
+EMAIL: STAY CONFIRMATION FOR PANAJI - JANUARY 2026
+==================================================
+Fictional demo record | For semantic-search testing only
+
+MESSAGE HEADER
+--------------
+From: reservations@harbour-lantern.example (fictional example domain)
+To: aarav.demo@example.test
+Date: 22 December 2025
+Subject: Your stay is held - Harbour Lantern Guesthouse, 15-19 January 2026
+This is a simulated booking email. The property, address, email domains, and confirmation code are invented.
+
+CONFIRMATION MESSAGE
+--------------------
+Hello Aarav,
+Thank you for selecting Harbour Lantern Guesthouse for your Goa visit. We have recorded a reservation for three adults from Thursday, 15 January 2026, to Monday, 19 January 2026. Accommodation: one triple room, four nights, breakfast excluded. Property location: fictional Lane 4, near the Panaji riverfront, Panaji, Goa 403001. Confirmation code: HLG-DEMO-26-0115.
+Room price: ₹2,100 per night x 4 nights = ₹8,400. Cleaning charge: ₹300. Promotional reduction: -₹700. Total expected bill: ₹8,000. A refundable security hold of ₹1,000 may be requested at check-in and is not included in the room total. A deposit of ₹2,000 was recorded against demo payment ID HLG-PAY-DEMO-8116; remaining accommodation balance: ₹6,000 before checkout.
+
+ARRIVAL DETAILS AND POLICY
+--------------------------
+Check-in from 13:00 and checkout by 10:30. Please message the property if arrival is expected after 20:00. The group may leave bags with reception before check-in, but the room cannot be promised early. Cancellation terms for this imaginary property: free cancellation until 7 January 2026; later changes may incur a one-night fee. These terms are illustrative, not a real commercial policy.
+The booking is for lodging only. Rail tickets, local transport and meals are not bundled into the tariff. Keep a copy of the confirmation and payment receipt for reimbursement. Reply “booking confirmation” or “accommodation email” should retrieve this file as well as a query about where the Goa group is staying.

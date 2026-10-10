@@ -1,0 +1,36 @@
+EXPENSE EXPORT Q4 - MACHINE-READABLE NUMERIC DUMP
+=================================================
+Fictional demo record | For semantic-search testing only
+
+EXPORT INFORMATION
+------------------
+Synthetic export produced 5 January 2026. Delimiter: comma. Currency column uses INR. This file intentionally contains a high ratio of numbers and compact labels so a search system can test noise filtering and avoid treating every numeric match as a relevant narrative.
+
+ROWS
+----
+row_id | date | cat_code | amount_inr | tax_inr | mode_code | ref_no
+-------+------+----------+------------+---------+-----------+-------
+1001 | 2025-10-02 | RENT | 9500 | 0 | UPI | 25100241
+1002 | 2025-10-05 | FOOD | 438 | 0 | CARD | 25100512
+1003 | 2025-10-09 | ELEC | 1332.95 | 0 | UPI | 25100983
+1004 | 2025-10-12 | TRAVEL | 280 | 0 | UPI | 25101207
+1005 | 2025-10-17 | BOOKS | 799 | 0 | CARD | 25101722
+1006 | 2025-11-02 | RENT | 9500 | 0 | UPI | 25110294
+1007 | 2025-11-04 | FOOD | 517 | 0 | UPI | 25110401
+1008 | 2025-11-08 | GYM | 1000 | 0 | UPI | 25110818
+1009 | 2025-11-18 | ELEC | 1298.4 | 0 | UPI | 25111836
+1010 | 2025-11-23 | TRAVEL | 640 | 0 | CARD | 25112357
+1011 | 2025-12-02 | RENT | 9500 | 0 | UPI | 25120261
+1012 | 2025-12-04 | FOOD | 462 | 0 | UPI | 25120489
+1013 | 2025-12-10 | TRAIN | 1245 | 0 | CARD | 25121016
+1014 | 2025-12-16 | ELEC | 1410.75 | 0 | UPI | 25121644
+1015 | 2025-12-21 | GIFTS | 650 | 0 | CARD | 25122133
+1016 | 2026-01-02 | RENT | 9500 | 0 | UPI | 26010220
+1017 | 2026-01-06 | FOOD | 498 | 0 | UPI | 26010668
+1018 | 2026-01-19 | ELEC | 1140.5 | 0 | UPI | 26011972
+1019 | 2026-01-22 | TRAVEL | 375 | 0 | UPI | 26012290
+1020 | 2026-01-28 | BOOKS | 1150 | 0 | CARD | 26012801
+
+FIELD KEY
+---------
+cat_code = expense category shorthand; mode_code = payment method; ref_no = invented reference number. Blank tax entries, refunds and reversals are not represented. Totals are not guaranteed to match separate bill files because this is a separate synthetic export, not an authoritative ledger. Avoid inferring a transaction purpose that is not encoded in the category.

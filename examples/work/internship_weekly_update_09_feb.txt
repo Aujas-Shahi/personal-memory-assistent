@@ -1,0 +1,18 @@
+INTERNSHIP WEEKLY UPDATE - WEEK ONE
+===================================
+Fictional demo record | For semantic-search testing only
+
+SUMMARY
+-------
+Week ending: 9 February 2026. Role: Junior Data Tools Intern (fictional placement). The first week focused on development setup, understanding the repository and shipping a small improvement without expanding the scope. Completed the onboarding checklist, installed the Python toolchain, ran the unit tests locally and read the internal note on handling sample datasets.
+The first assigned ticket was to add a safe fallback for unsupported file extensions in the ingestion script. Previously, a file that could not be parsed could stop the entire directory scan. The updated path records the filename, extension and a human-readable failure reason, then continues processing subsequent files. A test now covers an empty file and an unknown binary extension.
+
+WHAT REMAINS
+------------
+Open item: the current DOCX extractor returns paragraph text but misses some table content. I will build a small fixture containing a two-column fee table and confirm that the output contains both headings and corresponding values. I will also check how blank paragraphs and repeated section titles affect chunk boundaries.
+Review feedback: use structured logging instead of print statements, add type hints to the new helper, and keep the exception handler narrow enough not to hide programming errors. I have created a pull request but have not merged it pending one more test run.
+
+PLAN FOR NEXT WEEK
+------------------
+Monday: reproduce the table-extraction bug with a minimal fixture. Tuesday: compare parser output to the visible DOCX content. Wednesday: write tests for numbers, dates and currency symbols. Thursday: ask a mentor to review the logs and error messages. Friday: demo the supported and unsupported cases.
+No production or customer data was used. The test fixtures contain fictional addresses, amounts and identifiers. Main learning: “successful scan” should mean that each file was either indexed or clearly reported as skipped; silently ignoring a parser failure makes retrieval quality difficult to debug.

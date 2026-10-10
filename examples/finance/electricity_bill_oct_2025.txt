@@ -1,0 +1,16 @@
+ELECTRICITY BILL - OCTOBER 2025 BILLING CYCLE
+=============================================
+Fictional demo record | For semantic-search testing only
+
+CONSUMER SUMMARY
+----------------
+Fictional utility: Deccan City Power Services (DCPS), Pune. Bill reference: DCPS-DEMO-25-10-48319. Service address: Room 3B, Cedar Student Residency, Baner Road, Pune, Maharashtra 411045. Account name on this synthetic record: Aarav Demo. This is a made-up bill for testing; it is not an issued utility document.
+
+CHARGES AND METER READING
+-------------------------
+Billing period: 1 September to 30 September 2025. Previous reading: 18,420 kWh; current reading: 18,574 kWh; units consumed: 154 kWh. Meter ID: MTR-DEMO-77104. Domestic slab charges: ₹1,086.40; fixed charge: ₹110.00; fuel adjustment: ₹72.35; electricity duty: ₹64.20; prior balance: ₹0.00; late fee: ₹0.00. Total payable: ₹1,332.95.
+Payment due date: 18 October 2025. Payment channels listed on this mock record: UPI, net banking or the utility counter. Always verify a payment through the real provider; no live payment URL or QR code is supplied here.
+
+READING NOTES
+-------------
+September use was higher than the previous cycle because a desk fan and an additional study lamp were used during late-night revision. The estimate is based on an actual-style meter reading rather than a flat hostel allocation. If the account holder disputes the reading, the fictional customer desk advises recording the meter display and submitting a review request within seven days. For search tests, “power charges,” “utility dues,” and “electricity invoice” should be related terms.

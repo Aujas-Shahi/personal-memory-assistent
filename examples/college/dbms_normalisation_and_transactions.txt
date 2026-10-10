@@ -1,0 +1,18 @@
+DBMS REVISION: KEYS, NORMALISATION AND TRANSACTIONS
+===================================================
+Fictional demo record | For semantic-search testing only
+
+RELATIONAL DESIGN
+-----------------
+Revision sheet dated 3 September 2025 for the Database Management Systems course. A relation is a table, a tuple is a row, and an attribute is a column. A candidate key is a minimal attribute set that uniquely identifies a row; one candidate key is selected as the primary key. A foreign key refers to a candidate or primary key in another relation and helps preserve referential integrity.
+Example: ENROLMENT(StudentID, CourseID, Semester, Grade) can use the composite key (StudentID, CourseID, Semester) if one student can repeat a course in a later semester. Do not assume StudentID alone is unique in this table. Functional dependency X -> Y means matching X values imply matching Y values.
+
+NORMAL FORMS
+------------
+First Normal Form (1NF) requires atomic values and no repeating groups. Second Normal Form (2NF) removes partial dependency of a non-prime attribute on a proper subset of a candidate key. Third Normal Form (3NF) removes problematic transitive dependencies; a practical test is that for every non-trivial dependency X -> A, X is a superkey or A is prime. BCNF is stricter: the determinant of every non-trivial functional dependency must be a superkey.
+Suppose COURSE(CourseID, InstructorID, InstructorOffice) has CourseID -> InstructorID and InstructorID -> InstructorOffice. The instructor office depends on InstructorID, not directly on CourseID. Splitting COURSE and INSTRUCTOR avoids repeated office details and update anomalies. A decomposition should ideally be lossless and preserve useful dependencies.
+
+TRANSACTIONS AND SQL
+--------------------
+ACID stands for atomicity, consistency, isolation and durability. Atomicity means all-or-nothing; durability means a committed change survives a failure. Isolation controls how concurrent transactions interact. Dirty reads, non-repeatable reads and phantom reads describe different anomalies. A serial schedule is equivalent to running transactions one after another, though databases may achieve correctness with concurrency control.
+SQL reminders: WHERE filters rows before grouping; HAVING filters groups after GROUP BY. COUNT(*) counts rows, while COUNT(column) skips NULL values. Use explicit JOIN conditions and aliases. When an amount is unknown, NULL is not the same as zero; test it with IS NULL rather than = NULL. For joins that preserve unmatched rows from one side, consider LEFT JOIN.

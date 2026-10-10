@@ -1,0 +1,14 @@
+JOURNAL ENTRY - A RAINY EVENING AT THE LIBRARY
+==============================================
+Fictional demo record | For semantic-search testing only
+
+ENTRY | 7 JULY 2025
+-------------------
+The rain started just as the last practical finished, so the walk back to the hostel turned into a fifteen-minute wait under the computing block awning. I had planned to spend the evening revising database normalisation, but half the class seemed to have the same idea and the library was crowded by six.
+I found a desk near the windows on the second floor. The power blinked once and everyone looked up at the ceiling, then went back to their screens when the fans continued. I worked through two decomposition examples and finally understood why a decomposition can preserve the rows but lose a dependency. That took longer than the lecture made it sound.
+Around 7:40 pm, I called home and told them the semester was busy but manageable. I did not mention the unfinished internship application because I want to send a cleaner draft first. On the way back I bought a paper cup of chai for ₹20 and wrote tomorrow’s tasks on the back of the receipt: submit lab log, print the assignment brief, reply to project partner.
+
+WHAT TO REMEMBER
+----------------
+Today was productive without being dramatic. Three focused hours were more useful than the six-hour study marathon I tried last month. Tomorrow I should start with the lab log before checking messages, and I should leave the library by 8:30 so dinner does not become an afterthought. If the weather is still bad, carry the umbrella instead of pretending the clouds will wait until the lecture ends.
+This note is intentionally ordinary and reflective. It has no real contact details or sensitive information. Queries like “what did I do on a rainy evening,” “library study memory,” or “journal about DBMS revision” should retrieve it.
