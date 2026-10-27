@@ -1,222 +1,262 @@
-import streamlit as st
-import requests
+import base64
+import os
 import re
+import subprocess
+import sys
+
+import requests
+import streamlit as st
+
+
+FILE_ICONS = {
+    ".pdf": "📕", ".docx": "📘", ".pptx": "📙", ".txt": "📝",
+    ".png": "🖼️", ".jpg": "🖼️", ".jpeg": "🖼️",
+}
 
 
 def _highlight(text: str, query: str) -> str:
-    if not query.strip():
+    """Highlight query terms while escaping text before inserting Markdown markers."""
+    if not query.strip() or not text:
         return text
-    words = [w for w in re.findall(r"[a-zA-Z]{3,}", query) if w]
+    words = list(dict.fromkeys(w for w in re.findall(r"[\w-]{3,}", query, flags=re.UNICODE) if w))
     if not words:
         return text
-    pattern = re.compile(
-        r"(" + "|".join(re.escape(w) for w in words) + r")",
-        re.IGNORECASE,
-    )
-    return pattern.sub(r"**\1**", text)
+    pattern = re.compile(r"(" + "|".join(re.escape(w) for w in sorted(words, key=len, reverse=True)) + r")", re.IGNORECASE)
+    # Escape Markdown characters first so document content cannot accidentally become formatting.
+    escaped = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    escaped = re.sub(r"([`*_{}\[\]()#+.!|\\])", r"\\\1", escaped)
+    return pattern.sub(r"**\1**", escaped)
 
 
 def _render_tag_pills(tags: list[dict]):
-    """Render auto and manual tags as coloured pills."""
     if not tags:
+        st.caption("No tags assigned")
         return
-    parts = []
-    for t in tags:
-        label = t.get("name", "")
-        is_auto = t.get("auto_tagged", 1)
-        prefix = "🤖 " if is_auto else "🏷️ "
-        parts.append(f"`{prefix}{label}`")
-    st.markdown(" ".join(parts))
+    pills = []
+    for tag in tags:
+        name = str(tag.get("name", "")).replace("`", "'")
+        prefix = "🤖" if tag.get("auto_tagged", 1) else "🏷️"
+        pills.append(f"`{prefix} {name}`")
+    st.markdown("　".join(pills))
 
 
 def _fetch_tags(api_base: str, file_path: str) -> list[dict]:
+    if not file_path:
+        return []
     try:
-        r = requests.get(f"{api_base}/tags/file", params={"file_path": file_path})
-        if r.status_code == 200:
-            return r.json().get("tags", [])
-    except Exception:
+        response = requests.get(f"{api_base}/tags/file", params={"file_path": file_path}, timeout=5)
+        if response.ok:
+            return response.json().get("tags", [])
+    except requests.RequestException:
         pass
     return []
 
 
-def _render_result_card(result: dict, file_path: str, query: str, api_base: str, header: str = "##", idx: int = 0):
-    """Render a single text document result card with preview + tags."""
-    import base64 as _b64
-
-    file_name = result.get("file_name", "unknown")
-
-    col_title, col_btn = st.columns([5, 1])
-    with col_title:
-        st.markdown(f"{header} 📄 {file_name}")
-    with col_btn:
-        if file_path and st.button("Preview", key=f"prev_{idx}_{file_path}"):
-            try:
-                prev_resp = requests.get(f"{api_base}/preview", params={"file_path": file_path})
-                if prev_resp.status_code == 200:
-                    if "preview_data" not in st.session_state:
-                        st.session_state["preview_data"] = {}
-                    st.session_state["preview_data"][file_path] = prev_resp.json()
-            except Exception as exc:
-                st.error(f"Preview error: {exc}")
-
-    preview_store = st.session_state.get("preview_data", {})
-    if file_path in preview_store:
-        prev = preview_store[file_path]
-        with st.expander(f"Preview: {file_name}", expanded=True):
-            if prev.get("image_b64"):
-                st.image(_b64.b64decode(prev["image_b64"]), use_container_width=True)
-            else:
-                st.text(prev.get("preview", ""))
-
-    if file_path:
-        st.caption(f"Path: {file_path}")
-
-    tags = _fetch_tags(api_base, file_path) if file_path else []
-    _render_tag_pills(tags)
-
-    with st.expander("Add tag", expanded=False):
-        new_tag = st.text_input("Tag name", key=f"newtag_{idx}_{file_path}")
-        new_parent = st.text_input("Parent tag (optional)", key=f"newparent_{idx}_{file_path}")
-        if st.button("Add", key=f"addtag_{idx}_{file_path}"):
-            if new_tag.strip():
-                requests.post(
-                    f"{api_base}/tags/add",
-                    params={"file_path": file_path, "tag_name": new_tag.strip(),
-                            "parent_name": new_parent.strip()},
-                )
-                st.success(f"Added tag '{new_tag.strip()}'")
-
-    highlighted = _highlight(result.get("chunk_text", ""), query)
-    st.markdown("**Relevant Text:**")
-    st.markdown(highlighted)
-    st.markdown(f"**Match Score:** {round(result['similarity_score'] * 100, 1)}%")
-    st.divider()
-
-
-def _render_image_card(result: dict, file_path: str, api_base: str):
-    """Render a compact image result card in a grid column."""
-    import base64 as _b64
-
-    file_name = result.get("file_name", "unknown")
-    match_source = result.get("match_source", "clip")
-
+def _open_local_file(file_path: str):
+    """Open a file on the machine running Streamlit (intended for a local app)."""
+    if not file_path or not os.path.isfile(file_path):
+        st.warning("The original file is not available at this path on the Streamlit host.")
+        return
     try:
-        prev_resp = requests.get(f"{api_base}/preview", params={"file_path": file_path})
-        if prev_resp.status_code == 200:
-            prev_data = prev_resp.json()
-            if prev_data.get("image_b64"):
-                st.image(_b64.b64decode(prev_data["image_b64"]), use_container_width=True)
-    except Exception:
-        st.caption("(preview unavailable)")
-
-    st.caption(f"**{file_name}**")
-    score_label = f"{round(result['similarity_score'] * 100, 1)}%"
-    source_label = "🏷️ tag match" if match_source == "tag" else "🔍 visual"
-    st.caption(f"{source_label} · {score_label}")
-
-    tags = _fetch_tags(api_base, file_path) if file_path else []
-    _render_tag_pills(tags)
-    st.markdown("---")
+        if os.name == "nt":
+            os.startfile(file_path)  # noqa: S606 - user explicitly clicked Open file
+        elif sys.platform == "darwin":
+            subprocess.Popen(["open", file_path])
+        else:
+            subprocess.Popen(["xdg-open", file_path])
+        st.toast("Opening file on the Streamlit host…")
+    except Exception as exc:
+        st.error(f"Could not open file: {exc}")
 
 
-def render_chat_ui(api_base):
+def _render_result_card(result: dict, file_path: str, query: str, api_base: str, idx: int = 0):
+    file_name = result.get("file_name") or os.path.basename(file_path) or "Unknown file"
+    ext = os.path.splitext(file_name)[1].lower()
+    icon = FILE_ICONS.get(ext, "📄")
+    score = float(result.get("similarity_score", 0))
+    tags = _fetch_tags(api_base, file_path)
 
-    st.subheader("🔎 Search Your Memories")
+    with st.container(border=True):
+        title_col, score_col = st.columns([5, 1])
+        with title_col:
+            st.markdown(f"### {icon} {file_name}")
+            st.caption(f"{ext[1:].upper() if ext else 'FILE'} · Relevant passage")
+        with score_col:
+            st.metric("Match", f"{score * 100:.1f}%")
+        st.markdown("**Matching content**")
+        st.markdown(_highlight(result.get("chunk_text", ""), query))
+        st.markdown("**Tags**")
+        _render_tag_pills(tags)
 
-    search_mode = st.radio(
-        "Search by",
-        ["Text", "Image upload"],
-        horizontal=True,
-        label_visibility="collapsed",
-    )
+        action_cols = st.columns([1, 1, 3])
+        with action_cols[0]:
+            if st.button("👁 Preview", key=f"prev_{idx}_{file_path}", use_container_width=True, disabled=not file_path):
+                try:
+                    response = requests.get(f"{api_base}/preview", params={"file_path": file_path}, timeout=15)
+                    if response.ok:
+                        st.session_state.setdefault("preview_data", {})[file_path] = response.json()
+                    else:
+                        st.error("Preview is unavailable for this file.")
+                except requests.RequestException as exc:
+                    st.error(f"Preview error: {exc}")
+        with action_cols[1]:
+            if st.button("↗ Open file", key=f"open_{idx}_{file_path}", use_container_width=True, disabled=not file_path):
+                _open_local_file(file_path)
+        with action_cols[2]:
+            if file_path:
+                st.caption(file_path)
 
+        preview = st.session_state.get("preview_data", {}).get(file_path)
+        if preview:
+            with st.expander(f"Preview · {file_name}", expanded=True):
+                if preview.get("image_b64"):
+                    st.image(base64.b64decode(preview["image_b64"]), use_container_width=True)
+                else:
+                    st.text(preview.get("preview", "No preview text available."))
+
+        with st.expander("＋ Add a tag", expanded=False):
+            tag_col, parent_col = st.columns(2)
+            with tag_col:
+                new_tag = st.text_input("Tag name", key=f"newtag_{idx}_{file_path}")
+            with parent_col:
+                new_parent = st.text_input("Parent tag (optional)", key=f"newparent_{idx}_{file_path}")
+            if st.button("Save tag", key=f"addtag_{idx}_{file_path}"):
+                if not new_tag.strip():
+                    st.warning("Enter a tag name first.")
+                else:
+                    try:
+                        response = requests.post(
+                            f"{api_base}/tags/add",
+                            params={"file_path": file_path, "tag_name": new_tag.strip(), "parent_name": new_parent.strip()},
+                            timeout=10,
+                        )
+                        if response.ok:
+                            st.success(f"Added tag '{new_tag.strip()}'. Run the search again to refresh tags.")
+                        else:
+                            st.error("Could not save the tag.")
+                    except requests.RequestException as exc:
+                        st.error(f"Could not save tag: {exc}")
+
+
+def _render_image_card(result: dict, file_path: str, api_base: str, idx: int):
+    file_name = result.get("file_name", "Unknown image")
+    score = float(result.get("similarity_score", 0))
+    match_source = result.get("match_source", "clip")
+    tags = _fetch_tags(api_base, file_path)
+
+    with st.container(border=True):
+        try:
+            response = requests.get(f"{api_base}/preview", params={"file_path": file_path}, timeout=10)
+            preview = response.json() if response.ok else {}
+            if preview.get("image_b64"):
+                st.image(base64.b64decode(preview["image_b64"]), use_container_width=True)
+            else:
+                st.markdown("### 🖼️")
+                st.caption("Preview unavailable")
+        except requests.RequestException:
+            st.markdown("### 🖼️")
+            st.caption("Preview unavailable")
+
+        st.markdown(f"**{file_name}**")
+        source_label = "🏷️ Tag match" if match_source == "tag" else "🔍 Visual match"
+        st.caption(f"{source_label} · Match {score * 100:.1f}%")
+        _render_tag_pills(tags)
+        if st.button("👁 Preview image", key=f"image_prev_{idx}_{file_path}", use_container_width=True):
+            try:
+                response = requests.get(f"{api_base}/preview", params={"file_path": file_path}, timeout=10)
+                if response.ok:
+                    st.session_state.setdefault("preview_data", {})[file_path] = response.json()
+                    st.rerun()
+            except requests.RequestException as exc:
+                st.error(f"Could not load image: {exc}")
+        if st.session_state.get("preview_data", {}).get(file_path, {}).get("image_b64"):
+            st.image(base64.b64decode(st.session_state["preview_data"][file_path]["image_b64"]), use_container_width=True)
+
+
+def render_chat_ui(api_base: str):
+    st.markdown("## Search your memories")
+    st.caption("Search by meaning across documents and images — not just filenames.")
+
+    search_mode = st.radio("Search mode", ["Text search", "Find similar images"], horizontal=True, label_visibility="collapsed")
     query = ""
     uploaded_img = None
 
-    if search_mode == "Text":
-        query = st.text_input("Ask something about your stored files")
+    if search_mode == "Text search":
+        query_col, button_col = st.columns([5, 1])
+        with query_col:
+            query = st.text_input("Search query", placeholder="Ask anything about your files…", label_visibility="collapsed")
+        with button_col:
+            search_clicked = st.button("🔎 Search", type="primary", use_container_width=True)
     else:
-        uploaded_img = st.file_uploader(
-            "Upload a query image to find visually similar images",
-            type=["png", "jpg", "jpeg"],
-        )
+        uploaded_img = st.file_uploader("Upload an image to find visually similar images", type=["png", "jpg", "jpeg"], key="query_image_upload")
+        search_clicked = st.button("Find similar images", type="primary")
 
-    min_score = st.slider(
-        "Minimum match score (%)",
-        min_value=0, max_value=100, value=10, step=5,
-        help="Hide results below this relevance score."
-    )
+    with st.expander("Search filters", expanded=False):
+        min_score = st.slider("Minimum match score", min_value=0, max_value=100, value=10, step=5,
+                              key="minimum_match_score",
+                              help="Hide results below this score. Scores are ranking signals, not calibrated probabilities.")
 
-    if st.button("Search"):
-        if search_mode == "Text":
+    if search_clicked:
+        if search_mode == "Text search":
             if not query.strip():
-                st.warning("Please enter a search query.")
+                st.warning("Enter a query to search your memories.")
             else:
                 try:
-                    response = requests.post(
-                        f"{api_base}/query-combined",
-                        params={"query": query}
-                    )
-                    if response.status_code != 200:
-                        st.error("Search failed.")
+                    with st.spinner("Searching your memory…"):
+                        response = requests.post(f"{api_base}/query-combined", params={"query": query}, timeout=60)
+                    if not response.ok:
+                        st.error(f"Search failed (HTTP {response.status_code}).")
                     else:
                         data = response.json()
                         st.session_state["search_text_results"] = data.get("text", [])
                         st.session_state["search_image_results"] = data.get("images", [])
                         st.session_state["search_query"] = query
+                        st.session_state["search_mode"] = search_mode
                         st.session_state["preview_data"] = {}
-                except Exception as e:
-                    st.error(f"Error contacting backend: {e}")
-
-        else:  # Image upload mode
-            if uploaded_img is None:
-                st.warning("Please upload a query image.")
-            else:
-                try:
-                    response = requests.post(
-                        f"{api_base}/query-by-image",
-                        files={"file": (uploaded_img.name, uploaded_img.getvalue())},
-                    )
-                    if response.status_code != 200:
-                        st.error("Image search failed.")
-                    else:
-                        data = response.json()
-                        st.session_state["search_text_results"] = []
-                        st.session_state["search_image_results"] = data.get("results", [])
-                        st.session_state["search_query"] = ""
-                        st.session_state["preview_data"] = {}
-                except Exception as e:
-                    st.error(f"Error contacting backend: {e}")
+                except requests.RequestException as exc:
+                    st.error(f"Could not reach the backend: {exc}")
+        elif uploaded_img is None:
+            st.warning("Upload a query image first.")
+        else:
+            try:
+                with st.spinner("Finding visually similar images…"):
+                    response = requests.post(f"{api_base}/query-by-image", files={"file": (uploaded_img.name, uploaded_img.getvalue())}, timeout=60)
+                if not response.ok:
+                    st.error(f"Image search failed (HTTP {response.status_code}).")
+                else:
+                    data = response.json()
+                    st.session_state["search_text_results"] = []
+                    st.session_state["search_image_results"] = data.get("results", [])
+                    st.session_state["search_query"] = ""
+                    st.session_state["search_mode"] = search_mode
+                    st.session_state["preview_data"] = {}
+            except requests.RequestException as exc:
+                st.error(f"Could not reach the backend: {exc}")
 
     text_results = st.session_state.get("search_text_results", [])
     image_results = st.session_state.get("search_image_results", [])
     last_query = st.session_state.get("search_query", "")
-
     if not text_results and not image_results:
+        st.info("Your search results will appear here. Try a topic, question, or phrase from a file you have indexed.")
         return
 
-    threshold = min_score / 100
-
-    text_filtered = [r for r in text_results if r["similarity_score"] >= threshold]
-    image_filtered = [r for r in image_results if r["similarity_score"] >= threshold]
-
+    threshold = float(min_score) / 100
+    text_filtered = [r for r in text_results if float(r.get("similarity_score", 0)) >= threshold]
+    image_filtered = [r for r in image_results if float(r.get("similarity_score", 0)) >= threshold]
+    st.markdown("---")
+    st.caption(f"Results for: **{last_query or 'image similarity search'}** · {len(text_filtered) + len(image_filtered)} result(s)")
     if not text_filtered and not image_filtered:
-        st.info(f"No results above {min_score}% match score.")
+        st.info(f"No results meet the {min_score}% minimum score. Try lowering the filter.")
         return
 
-    # ---- Documents / text results ----
     if text_filtered:
-        st.markdown("### 📄 Documents")
-        current_file = None
+        st.markdown(f"### 📄 Documents · {len(text_filtered)}")
         for idx, result in enumerate(text_filtered):
-            file_path = result.get("file_path", "")
-            _render_result_card(result, file_path, last_query, api_base, header="##", idx=idx)
+            _render_result_card(result, result.get("file_path", ""), last_query, api_base, idx=idx)
 
-    # ---- Image results ----
     if image_filtered:
-        st.markdown("### 🖼️ Images")
+        st.markdown(f"### 🖼️ Images · {len(image_filtered)}")
         cols = st.columns(3)
         for idx, result in enumerate(image_filtered):
-            file_path = result.get("file_path", "")
-            with cols[idx % 3]:
-                _render_image_card(result, file_path, api_base)
+            with cols[idx % len(cols)]:
+                _render_image_card(result, result.get("file_path", ""), api_base, idx)
