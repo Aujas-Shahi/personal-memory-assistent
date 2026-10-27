@@ -66,29 +66,14 @@ with st.sidebar.expander("📁 Index a folder", expanded=True):
     st.caption("Type a path or browse to a folder on the machine running Streamlit.")
     if "index_folder_path" not in st.session_state:
         st.session_state.index_folder_path = DEFAULT_FOLDER
-    path_col, browse_col = st.columns([4, 1])
-    with path_col:
-        st.text_input("Folder path", key="index_folder_path", label_visibility="collapsed", placeholder="Enter folder path…")
-    with browse_col:
-        if st.button("Browse", help="Open a native folder picker", use_container_width=True):
-            try:
-                import tkinter as tk
-                from tkinter import filedialog
+    
+    st.text_input(
+        "Folder path",
+        key="index_folder_path",
+        label_visibility="collapsed",
+        placeholder="Enter or paste a folder path..."
+    )
 
-                root = tk.Tk()
-                root.withdraw()
-                try:
-                    root.wm_attributes("-topmost", 1)
-                except Exception:
-                    pass
-                selected_folder = filedialog.askdirectory(title="Choose a folder to index")
-                root.destroy()
-                if selected_folder:
-                    st.session_state.index_folder_path = selected_folder
-                    st.rerun()
-            except Exception as exc:
-                st.warning("The native folder picker is unavailable in this environment. Enter the folder path manually.")
-                st.caption(str(exc))
 
     reset_index = st.checkbox("Clear existing index first", value=False,
                               help="Removes existing indexed vectors before indexing. Use carefully.")
